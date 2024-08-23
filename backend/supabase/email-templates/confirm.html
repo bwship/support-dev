@@ -1,0 +1,19 @@
+<p>Hi {{ .Data.firstName }},</p>
+
+<p>We have received your request for account authentication.</p>
+
+<a href="{{ .SiteURL}}/confirmsignup?token={{ .TokenHash }}"
+   style="display: inline-block; padding: 10px 20px; background-color: #1FADB5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;"
+>
+  Confirm Email Address
+</a>
+
+<p>Alternatively, you may enter the OTP code <b>{{ .Token }}</b> in the app or on the website.</p>
+
+<p>This code will expire in 24 hours and can be used only once.  If you did not request access
+  you can ignore this email.  If you are unable to access your account, please reach out to 
+  <a href="mailto:support@support.dev">support</a>.
+</p>
+
+<p>Thanks,</p>
+<p>Support.dev Team</p>

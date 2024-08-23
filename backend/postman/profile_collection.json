@@ -1,0 +1,398 @@
+{
+	"info": {
+		"_postman_id": "751f69d5-7c3f-4893-86cf-857e7474f47b",
+		"name": "Profile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains access_token\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+							"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "7eb78b73-9b81-4752-95e4-950f6288f49c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/auth/v1/token?grant_type=password",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"auth",
+						"v1",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+							"    pm.environment.set(\"CLIENT_TEAM_ID\", responseBody[0].id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "16347bb1-0f07-4b77-bf5d-62bdc3a5af75",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "user_id",
+							"value": "eq.{{CLIENT_USER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Team",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "96cc206e-3f58-48c3-9711-d30c1ce869eb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&team_id=eq.{{CLIENT_TEAM_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "team_id",
+							"value": "eq.{{CLIENT_TEAM_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Try to get someone else's team",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is an empty array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array').that.is.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "1859916c-12ad-40d0-8a8c-010506507b4b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&team_id=eq.2",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "team_id",
+							"value": "eq.2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Try to get someone else's profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is an empty array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array').that.is.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "0c2094f2-9d7e-4629-870f-f437c3e32a40",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&id=eq.5",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "id",
+							"value": "eq.5"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

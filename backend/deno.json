@@ -1,0 +1,42 @@
+{
+  "lint": {
+    "include": ["supabase/"],
+    "exclude": ["postman/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["ban-untagged-todo"],
+      "exclude": ["no-explicit-any", "no-unused-vars"]
+    }
+  },
+  "fmt": {
+    "singleQuote": true
+  },
+  "test": {
+    "include": [
+      "supabase/tests/deno/rls/event-select-rls.test.ts",
+      "supabase/tests/deno/rls/address-rls.test.ts",
+      "supabase/tests/deno/rls/lookup-tables-rls.test.ts",
+      "supabase/tests/deno/rls/standard-select-rls.test.ts",
+      "supabase/tests/deno/rls/notification-rls.test.ts",
+      "supabase/tests/deno/rls/event-rls.test.ts",
+      "supabase/tests/deno/rls/event-step-rls.test.ts",
+      "supabase/tests/deno/rls/profile-rls.test.ts",
+      "supabase/tests/deno/onesignal.test.ts",
+      "supabase/tests/deno/notifications.test.ts",
+      "supabase/tests/deno/ranking.test.ts",
+      "supabase/tests/deno/profile-images.test.ts"
+    ],
+    "exclude": [
+      "supabase/tests/deno/twilio.test.ts",
+      "supabase/tests/deno/rls/event-step-request-rls.test.ts",
+      "supabase/tests/deno/rls/config-rls.test.ts",
+      "supabase/tests/deno/rls/event-processing-rls.test.ts",
+      "supabase/tests/deno/rls/profile-location-rls.test.ts",
+      "supabase/tests/deno/rls/relationship-rls.test.ts",
+      "supabase/tests/deno/rls/team-rls.test.ts",
+      "supabase/tests/deno/events-process.test.ts",
+      "supabase/tests/deno/event-clone.test.ts",
+      "supabase/tests/deno/hubspot.test.ts"
+    ]
+  }
+}

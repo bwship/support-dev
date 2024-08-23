@@ -1,0 +1,486 @@
+{
+	"info": {
+		"_postman_id": "b363684e-b295-4579-abb2-007fe2792eb1",
+		"name": "Family",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains access_token\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+							"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "4fcbf621-ec90-4489-98bb-132f0b6d2d0a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/auth/v1/token?grant_type=password",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"auth",
+						"v1",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"",
+							"    // set the client profile and team",
+							"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+							"    pm.environment.set(\"CLIENT_TEAM_ID\", responseBody[0].team_id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "9e86ccb0-2540-4905-8031-3011162c0c67",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_profile_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_profile_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "user_id",
+							"value": "eq.{{CLIENT_USER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Family Member",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"FAMILY_MEMBER_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "96952784-d850-4a86-9c24-b97641706a4b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"_user_id\": null,\n  \"_parent_profile_id\": {{CLIENT_PROFILE_ID}},\n  \"_id\": null,\n  \"_profile_attributes\": null,\n  \"_relationship_attributes\": {\n    \"family_member_type\": \"FATHER\"\n  },\n  \"_first_name\": \"John\",\n  \"_last_name\": \"John\",\n  \"_profile_url\": null,\n  \"_roles\": [\n    \"FAMILY_MEMBER\"\n  ],\n  \"_team_id\": {{CLIENT_TEAM_ID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_profile_and_relationship_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Family Member",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "e106ee18-b67c-4b9d-9c65-a3613dda8965",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&id=eq.{{FAMILY_MEMBER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "id",
+							"value": "eq.{{FAMILY_MEMBER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Family Member",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "444f5932-b2ba-41c6-8e2a-cf371bb107d3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"_profile_id\": {{FAMILY_MEMBER_ID}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_relationship_deactivate"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Family Member Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "e0d37233-d4fe-41c5-9def-41720c9f8f73",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"_profile_id\": {{FAMILY_MEMBER_ID}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_relationship_deactivate"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Family Member - Not active",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"});",
+							"",
+							"pm.test(\"Response body isActive is false\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].is_active).to.exist.and.to.be.false;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "0a55057c-7fe6-42f8-8d9b-39b15479ee4b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&id=eq.{{FAMILY_MEMBER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "id",
+							"value": "eq.{{FAMILY_MEMBER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

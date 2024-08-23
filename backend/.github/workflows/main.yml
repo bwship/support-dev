@@ -1,0 +1,59 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: main
+
+    env:
+      HUBSPOT_RBY_USERS_TOKEN: ${{ secrets.HUBSPOT_RBY_USERS_TOKEN }}
+      ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
+      ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+      ONESIGNAL_EMAIL_FROM_ADDRESS: ${{ secrets.ONESIGNAL_EMAIL_FROM_ADDRESS }}
+      ONESIGNAL_EMAIL_FROM_NAME: ${{ secrets.ONESIGNAL_EMAIL_FROM_NAME }}
+      ONESIGNAL_PHONE_NUMBER: ${{ secrets.ONESIGNAL_PHONE_NUMBER }}
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPPORT_ENV: ${{ vars.SUPPORT_ENV }}
+      VERBOSE: ${{ vars.VERBOSE }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to project
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+
+      - name: Set Environment Variable Secrets
+        run: |
+          supabase secrets set HUBSPOT_RBY_USERS_TOKEN=$HUBSPOT_RBY_USERS_TOKEN
+          supabase secrets set ONESIGNAL_APP_ID=$ONESIGNAL_APP_ID
+          supabase secrets set ONESIGNAL_REST_API_KEY=$ONESIGNAL_REST_API_KEY
+          supabase secrets set ONESIGNAL_EMAIL_FROM_ADDRESS=$ONESIGNAL_EMAIL_FROM_ADDRESS
+          supabase secrets set ONESIGNAL_EMAIL_FROM_NAME=$ONESIGNAL_EMAIL_FROM_NAME
+          supabase secrets set ONESIGNAL_PHONE_NUMBER=$ONESIGNAL_PHONE_NUMBER
+          supabase secrets set SLACK_TOKEN=$SLACK_TOKEN
+          supabase secrets set SUPPORT_ENV=$SUPPORT_ENV
+          supabase secrets set VERBOSE=$VERBOSE
+
+      - name: Migrate Database
+        run: supabase db push
+
+      - name: Deploy Events Function
+        run: supabase functions deploy events
+
+      - name: Deploy Users Function
+        run: supabase functions deploy users

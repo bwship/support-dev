@@ -1,0 +1,19 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.24.0",
+    "asserts": "https://deno.land/std@0.192.0/testing/asserts.ts",
+    "djwt": "https://deno.land/x/djwt@v2.9.1/mod.ts",
+    "i18n": "https://deno.land/x/i18next/index.js",
+    "kafka": "https://deno.land/x/upstash_kafka@v1.3.3",
+    "lodash": "https://cdn.jsdelivr.net/npm/flatted@3.2.7/+esm",
+    "moment": "https://deno.land/x/momentjs@2.29.1-deno/mod.ts",
+    "oak": "https://deno.land/x/oak@v12.6.0/mod.ts",
+    "oakCors": "https://deno.land/x/cors@v1.2.2/mod.ts",
+    "onesignal": "https://esm.sh/@onesignal/node-onesignal@2.0.1-beta2",
+    "std/serve": "https://deno.land/std@0.177.0/http/server.ts",
+    "std_datetime": "https://deno.land/std/datetime/mod.ts",
+    "twilio": "https://deno.land/x/twilio@0.1.1/Twilio.ts",
+    "upstash_redis": "https://deno.land/x/upstash_redis@v1.19.3/mod.ts",
+    "uuid": "https://deno.land/x/uuid/mod.ts"
+  }
+}

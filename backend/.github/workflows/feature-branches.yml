@@ -1,0 +1,76 @@
+name: Feature Branch Linting & Tests
+
+on:
+  push:
+    branches-ignore:
+      - 'development'
+      - 'staging'
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: '1.35.2'
+
+      - name: Lint code
+        run: deno lint --ignore=./postman/*
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start up Supabase
+        run: npx supabase start
+
+      - name: Get Supabase Vars
+        id: supabase-vars
+        run: |
+          OUTPUT=$(npx supabase status -o env)
+          echo "$OUTPUT" | while read -r line; do
+            VAR_NAME=$(echo "$line" | cut -d'=' -f1)
+            VAR_VALUE=$(echo "$line" | cut -d'=' -f2-)
+  
+            # Removing wrapping quotes
+            VAR_VALUE=$(echo $VAR_VALUE | tr -d '"')
+  
+            # Renaming the variables as per your requirements
+            if [ "$VAR_NAME" == "SERVICE_ROLE_KEY" ]; then
+              VAR_NAME="SUPABASE_SERVICE_ROLE_KEY"
+            elif [ "$VAR_NAME" == "ANON_KEY" ]; then
+              VAR_NAME="SUPABASE_ANON_KEY"
+            elif [ "$VAR_NAME" == "API_URL" ]; then
+              VAR_NAME="SUPABASE_URL"
+            fi
+  
+            echo "::set-env name=$VAR_NAME::$VAR_VALUE"
+          done
+
+      - name: Insert SUPABASE_EDGE_FUNCTION_URL and SUPABASE_ANON_KEY into config table
+        run: node insertConfig.js
+
+      #- name: Run Edge Function Tests
+      #  run: |
+      #    deno cache ./supabase/functions/import_map.json
+      #    deno test --allow-all --import-map=./supabase/functions/import_map.json ./supabase/tests/deno
+
+      #- name: Run DB Tests
+      #  run: |
+      #      supabase db start
+      #      supabase test db

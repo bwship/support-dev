@@ -1,0 +1,2484 @@
+{
+	"info": {
+		"_postman_id": "7f9ae240-6cfb-45e0-8de6-57a4919048ad",
+		"name": "Addresses",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "No Access Token Tests",
+			"item": [
+				{
+					"name": "Logout Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"// don't performa. test, as there might not be a user already logged in",
+									"",
+									"pm.environment.unset(\"CLIENT_ACCESS_TOKEN\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "af921b96-7175-4f61-ba22-1450e80a0318",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "360cf207-abea-4631-89f3-ed2039dc4126",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/v1/logout",
+						"description": "Log the client out of the API, and remove their access token."
+					},
+					"response": []
+				},
+				{
+					"name": "Select Addresses without access_token (No Recodds)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9515da29-aca9-4bcd-91a2-dcbd83dfc200",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.body",
+									"});",
+									"",
+									"pm.test(\"Response body is an empty array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array').that.is.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "e1bb9f3e-c5cc-4294-b498-ebf4366edff2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								}
+							]
+						},
+						"description": "Check that a user that is not logged in can not access the view."
+					},
+					"response": []
+				}
+			],
+			"id": "e4a731d8-1f77-4318-8967-478f7270477a",
+			"description": "When a user is not logged in, they should not get back any addresses."
+		},
+		{
+			"name": "Login and select own addresses",
+			"item": [
+				{
+					"name": "Login Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "238dade2-c593-44b3-bfb1-e44e5628660f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "3d624026-561a-422a-9435-9f52eb542aad",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_profile_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_profile_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{CLIENT_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Addresses",
+					"id": "5ed4ece4-6836-4ed4-8543-6a45c0372c7b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=id,street_address_1,zip&profile_id=eq.{{CLIENT_PROFILE_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "id,street_address_1,zip"
+								},
+								{
+									"key": "profile_id",
+									"value": "eq.{{CLIENT_PROFILE_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "b8793427-c70c-4f85-84f3-228e8722e5f5",
+			"description": "Log a CLIENT into the system, and then return their addresses"
+		},
+		{
+			"name": "Login HELPER and retrieve CLIENT's addresses",
+			"item": [
+				{
+					"name": "Login Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "3585adfc-962f-472c-b200-a7dd48a34881",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Helper",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"HELPER_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"HELPER_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "a1ccec7f-8d4b-4bbb-9cd5-92d534ac1d2d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{HELPER_EMAIL_ADDRESS}}\",\n    \"password\": \"{{HELPER_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "ed4d36fb-4825-4c38-b612-b09b1a379275",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{CLIENT_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Addresses",
+					"id": "ac84456e-411e-4293-983d-2ab4cc541835",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&profile_id=eq.{{CLIENT_PROFILE_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "profile_id",
+									"value": "eq.{{CLIENT_PROFILE_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "cc7883c4-cacf-4ca0-8a9a-953d36956980",
+			"description": "Login as a HELPER and have the ability to videw addresses of the CLIENT."
+		},
+		{
+			"name": "Create, edit, deactivate an address",
+			"item": [
+				{
+					"name": "Login Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "6df8580d-03a6-4cdb-b7e5-fe0b71c89b20",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "710f392a-e80c-40a0-868c-c41140f4521e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{CLIENT_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create an Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+									"",
+									"    pm.environment.set(\"ADDRESS_ID\", responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "235b3802-8ad2-4506-a58e-8f8167863bff",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_city\": \"test\", \n    \"_description\": \"test\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\", \n    \"_state\": \"CA\", \n    \"_street_address_1\": \"101 Oak St\", \n    \"_type\": \"HOME\", \n    \"_zip\": \"17070\",\n    \"_id\": null,\n    \"_location\": null,\n    \"_street_address_2\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_upsert"
+					},
+					"response": []
+				},
+				{
+					"name": "Select New Address",
+					"id": "bd7d28d0-6528-4028-a7e4-74ad023114e9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update an Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+									"",
+									"    pm.environment.set(\"ADDRESS_ID\", responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "b58b9a91-e848-4311-8e7f-cfd4123b6cd9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_city\": \"test\", \n    \"_description\": \"UPDATED test\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\", \n    \"_state\": \"CA\", \n    \"_street_address_1\": \"101 Oak St\", \n    \"_type\": \"HOME\", \n    \"_zip\": \"17070\",\n    \"_id\": {{ADDRESS_ID}},\n    \"_location\": null,\n    \"_street_address_2\": \"Unit Updated\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_upsert"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Update of Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f3bcb73-afa3-4d11-8915-7d1f90d3f237",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check if description and street_address_2 are updated correctly\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].description).to.eql(\"UPDATED test\");",
+									"    pm.expect(responseBody[0].street_address_2).to.eql(\"Unit Updated\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "92ad9125-94b2-4273-960c-b831d169ad33",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"    pm.response.to.have.status(204);   // No content response",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "f26d88ce-2371-4f40-874b-c6a36d480419",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": {{ADDRESS_ID}}\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_deactivate"
+					},
+					"response": []
+				},
+				{
+					"name": "Address is deactivated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f3bcb73-afa3-4d11-8915-7d1f90d3f237",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check if description and street_address_2 are updated correctly\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].is_active).to.eql(false);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "4cf8cd8f-ba02-42d6-90f1-d0f367d77008",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "1d1daeb3-576d-4ce4-a1da-0fb0ed70f188",
+			"description": "Perform creating, editing, and then deactivating an address"
+		},
+		{
+			"name": "RLS Address Profile Tests with Other",
+			"item": [
+				{
+					"name": "Login Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "3f1f6c0f-8e77-4a8a-98e2-06645ee0caa9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "37c1d6dd-9b2d-40eb-bb14-15c7b1476058",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{CLIENT_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create an Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+									"",
+									"    pm.environment.set(\"ADDRESS_ID\", responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "edaab9c0-3c8f-46d6-b2c9-a1ad8eaf6a83",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_city\": \"test\", \n    \"_description\": \"test\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\", \n    \"_state\": \"CA\", \n    \"_street_address_1\": \"101 Oak St\", \n    \"_type\": \"HOME\", \n    \"_zip\": \"17070\",\n    \"_id\": null,\n    \"_location\": null,\n    \"_street_address_2\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_upsert"
+					},
+					"response": []
+				},
+				{
+					"name": "Select New Address",
+					"id": "c0e7dfe0-6abf-4aa2-a99e-243c33d0a91c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Other Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"OTHER_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"OTHER_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "fe86cddd-caaf-4f93-bb81-ddd98ff3281f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{OTHER_EMAIL_ADDRESS}}\",\n    \"password\": \"{{OTHER_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Other Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"OTHER_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "eef32ed8-4698-4ee9-ab12-f4b22bd9e0ba",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{OTHER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{OTHER_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{OTHER_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Address as Other",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e98f2ea-b9ba-4a9b-a59e-15cb878961e7",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Empty Array Response Received\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.length, \"Response array should be empty\").to.eql(0);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "dcf50551-5fd1-4bde-892f-fe8ef47897e4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{OTHER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update an Address as Other",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+									"",
+									"    pm.environment.set(\"ADDRESS_ID\", responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "6936b5f4-f8fa-4d21-98e0-5a06931a4ffb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{OTHER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_city\": \"test\", \n    \"_description\": \"UPDATED by OTHER.  Should fail\",\n    \"_profile_id\": \"{{OTHER_PROFILE_ID}}\", \n    \"_state\": \"CA\", \n    \"_street_address_1\": \"101 Oak St\", \n    \"_type\": \"HOME\", \n    \"_zip\": \"17070\",\n    \"_id\": {{ADDRESS_ID}},\n    \"_location\": null,\n    \"_street_address_2\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_upsert"
+					},
+					"response": []
+				},
+				{
+					"name": "Address is NOT Updated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f3bcb73-afa3-4d11-8915-7d1f90d3f237",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check if description, updated_at, updated_by are unchanged\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].description).to.eql(\"test\");",
+									"    pm.expect(responseBody[0].updated_at).to.eql(null);",
+									"    pm.expect(responseBody[0].updated_by).to.eql(null);    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "2a2a6707-4a8e-4091-b488-7d7ec535ac4d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Address as Other",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"    pm.response.to.have.status(204);   // No content response",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "bda09c23-4086-4d12-8eb1-22299c49b2fc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{OTHER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": {{ADDRESS_ID}}\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_deactivate"
+					},
+					"response": []
+				},
+				{
+					"name": "Address is NOT deactivated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f3bcb73-afa3-4d11-8915-7d1f90d3f237",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check if description and street_address_2 are updated correctly\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].is_active).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "283e5cc1-1a61-4b00-b67c-30f0a5293536",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "451bf39d-3879-4c7c-87ea-3d444d9c639f",
+			"description": "Perform creating, editing, and then deactivating an address"
+		},
+		{
+			"name": "RLS Address Profile Tests with Helper",
+			"item": [
+				{
+					"name": "Login Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "4792fd01-16ed-4988-8bce-514b2e766e55",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "70aa2486-fb02-4468-87fa-b579bc6a4933",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{CLIENT_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create an Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+									"",
+									"    pm.environment.set(\"ADDRESS_ID\", responseBody);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "b5da6ef8-2509-48aa-b579-7846581ca947",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_city\": \"test\", \n    \"_description\": \"test\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\", \n    \"_state\": \"CA\", \n    \"_street_address_1\": \"101 Oak St\", \n    \"_type\": \"HOME\", \n    \"_zip\": \"17070\",\n    \"_id\": null,\n    \"_location\": null,\n    \"_street_address_2\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_upsert"
+					},
+					"response": []
+				},
+				{
+					"name": "Select New Address",
+					"id": "e33d951c-f0a5-416b-bf96-693b9e473297",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Helper",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains access_token\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"HELPER_ACCESS_TOKEN\", responseBody.access_token);",
+									"    pm.environment.set(\"HELPER_USER_ID\", responseBody.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "53b683c8-1c6c-4fd6-9819-2b3d1f90a285",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{HELPER_EMAIL_ADDRESS}}\",\n    \"password\": \"{{HELPER_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/v1/token?grant_type=password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"v1",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Helper Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response body contains id\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+									"",
+									"    // set the client api key for access",
+									"    pm.environment.set(\"HELPER_PROFILE_ID\", responseBody[0].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "24d3a208-8cc7-4fc9-acfb-764b1af17ea0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{HELPER_USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_team"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "user_id",
+									"value": "eq.{{HELPER_USER_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Address as Helper",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e98f2ea-b9ba-4a9b-a59e-15cb878961e7",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Should get client's address\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    var addressId = pm.environment.get(\"ADDRESS_ID\");",
+									"    pm.expect(responseBody[0].id, \"Address ID should be equal to expected\").to.eql(addressId);",
+									"    pm.expect(responseBody.length, \"Response array length should be 1\").to.eql(1);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "c3b3c2ef-d919-494c-bdd7-32b8c1d92cf1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/rest/v1/vw_address?select=*&id=eq.{{ADDRESS_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"vw_address"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "*"
+								},
+								{
+									"key": "id",
+									"value": "eq.{{ADDRESS_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Client Address as Helper",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"code and message should be RLS violation\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.code).to.eql(\"42501\");",
+									"    pm.expect(responseBody.message).to.eql(\"new row violates row-level security policy for table \\\"address\\\"\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "082c6e27-7cf2-4d9a-9f44-92a5e98c865b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_city\": \"test\", \n    \"_description\": \"UPDATED by OTHER.  Should fail\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\", \n    \"_state\": \"CA\", \n    \"_street_address_1\": \"101 Oak St\", \n    \"_type\": \"HOME\", \n    \"_zip\": \"17070\",\n    \"_id\": {{ADDRESS_ID}},\n    \"_location\": null,\n    \"_street_address_2\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_upsert"
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Address as Helper",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+								"exec": [
+									"pm.test(\"Response status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"code and message should be RLS violation\", function () {",
+									"    var responseBody = pm.response.json();",
+									"    pm.expect(responseBody.code).to.eql(\"42501\");",
+									"    pm.expect(responseBody.message).to.eql(\"new row violates row-level security policy for table \\\"address\\\"\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "07dd9346-35d6-4cef-a979-9ebf79fc2107",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "apiKey",
+								"value": "{{API_KEY}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": {{ADDRESS_ID}}\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/rest/v1/rpc/fn_address_deactivate"
+					},
+					"response": []
+				}
+			],
+			"id": "2aea2cba-4278-4dba-9305-5972a022acb2",
+			"description": "Perform creating, editing, and then deactivating an address"
+		}
+	]
+}

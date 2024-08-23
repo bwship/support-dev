@@ -1,0 +1,34 @@
+{
+  "name": "support-dev-api",
+  "version": "1.0.0",
+  "description": "Support Dev API",
+  "author": "Bob Wall",
+  "license": "MIT",
+  "scripts": {
+    "deploy:db": "npx supabase db push",
+    "deploy:functions": "npx supabase functions deploy",
+    "lint": "deno lint --ignore=./postman/*",
+    "local:db:deploy": "npx supabase db reset",
+    "local:db:test": "npx supabase test db",
+    "local:functions": "npx supabase functions serve --no-verify-jwt --env-file ./supabase/functions/.env",
+    "local:functions:test": "deno test --allow-all --allow-env ./supabase/functions/.env --import-map=./supabase/functions/import_map.json ./supabase/tests/deno --coverage=coverage",
+    "local:functions:test:coverage": "deno --unstable coverage ./coverage --lcov > coverage.lcov",
+    "local:test:all": "pnpm local:db:test && pnpm local:functions:test",
+    "local:start": "npx supabase start",
+    "local:stop": "npx supabase stop"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.38.2",
+    "deno": "0.1.1",
+    "tsconfig-paths": "4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.4.2",
+    "supabase": "1.110.1",
+    "typescript": "5.1.6"
+  },
+  "resolutions": {
+    "string-width": "4.2.2",
+    "wrap-ansi": "7.0.0"
+  }
+}

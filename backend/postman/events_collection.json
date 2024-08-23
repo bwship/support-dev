@@ -1,0 +1,2184 @@
+{
+	"info": {
+		"_postman_id": "63ad764c-f4a7-4734-bdbf-a107af626d6a",
+		"name": "Events",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "RLS",
+			"item": [
+				{
+					"name": "Select",
+					"item": [
+						{
+							"name": "Client Created and Accessed",
+							"item": [
+								{
+									"name": "Login Client",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains access_token\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+													"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "673054fa-bba3-4b4f-b366-1d73011ab156",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/auth/v1/token?grant_type=password",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"auth",
+												"v1",
+												"token"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "password"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Client Profile",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "98561688-941b-476b-aa6d-5c785e202f70",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_team"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "user_id",
+													"value": "eq.{{CLIENT_USER_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create an Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+													"",
+													"    pm.environment.set(\"EVENT_ID\", responseBody);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "95e35fa4-263a-4e48-9f03-d086602dbe03",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"_description\": \"Hospital visit for radiation\",\n    \"_name\": \"Radiation\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\",\n    \"_start_date\": \"2023-10-10\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{URL}}/rest/v1/rpc/fn_event_upsert"
+									},
+									"response": []
+								},
+								{
+									"name": "Get Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains number and it matches expected event id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+													"    var eventId =  pm.environment.get(\"EVENT_ID\");",
+													"    pm.expect(responseBody[0].id).to.eq(eventId);",
+													"    });",
+													"",
+													"pm.test(\"Fields match expected values\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].description).to.eq('Hospital visit for radiation');",
+													"    pm.expect(responseBody[0].name).to.eq('Radiation');",
+													"    pm.expect(responseBody[0].start_date).to.eq('2023-10-10');",
+													"    });"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "7d5bd237-c5cf-45bb-86b9-046fee172961",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_event?select=*&id=eq.{{EVENT_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_event"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "id",
+													"value": "eq.{{EVENT_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "f32e5f69-1c6c-44e9-b645-1f6775d3d8a4"
+						},
+						{
+							"name": "Client Created and Accessed By Other",
+							"item": [
+								{
+									"name": "Login Client",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains access_token\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+													"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "7c420f2f-6a1a-4772-bab6-53e869e0e0f2",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/auth/v1/token?grant_type=password",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"auth",
+												"v1",
+												"token"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "password"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Client Profile",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "fcb11e50-bec9-4d53-aa0e-2ffe4b1beaa1",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_team"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "user_id",
+													"value": "eq.{{CLIENT_USER_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create an Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+													"",
+													"    pm.environment.set(\"EVENT_ID\", responseBody);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "b3547294-2953-49e5-86e0-242c7574f3da",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"_description\": \"Event Created by Client\",\n    \"_name\": \"Radiation\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\",\n    \"_start_date\": \"2023-10-18\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{URL}}/rest/v1/rpc/fn_event_upsert"
+									},
+									"response": []
+								},
+								{
+									"name": "Login Other",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains access_token\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"OTHER_ACCESS_TOKEN\", responseBody.access_token);",
+													"    pm.environment.set(\"OTHER_USER_ID\", responseBody.user.id);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "dc00b4ec-911a-40ea-9227-b6bd40bab5d1",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{OTHER_EMAIL_ADDRESS}}\",\n    \"password\": \"{{OTHER_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/auth/v1/token?grant_type=password",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"auth",
+												"v1",
+												"token"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "password"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Other Profile",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"OTHER_PROFILE_ID\", responseBody[0].id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "0a0f7c9d-5002-448c-a27d-363665d91807",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{OTHER_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{OTHER_USER_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_team"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "user_id",
+													"value": "eq.{{OTHER_USER_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Event as Other",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body is empty array\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.length).to.eq(0);",
+													"    });",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "4038b407-8e71-479e-8857-c27d4e97c3ba",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{OTHER_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_event?select=*&id=eq.{{EVENT_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_event"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "id",
+													"value": "eq.{{EVENT_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "efeb3058-fc20-45f3-8830-d9da9a2c6b26",
+							"description": "Testing selection policy for those not on same team or the creator of the event"
+						},
+						{
+							"name": "Client Created and Accessed By Helper",
+							"item": [
+								{
+									"name": "Login Client",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains access_token\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+													"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "3c6da155-e262-4f8e-9985-b1281e3d0d38",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/auth/v1/token?grant_type=password",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"auth",
+												"v1",
+												"token"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "password"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Client Profile",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "24643bc6-115f-49f4-bc0c-56209c45be2a",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_team"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "user_id",
+													"value": "eq.{{CLIENT_USER_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create an Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+													"",
+													"    pm.environment.set(\"EVENT_ID\", responseBody);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "1ef6b9f3-57e4-4ef4-8acb-bd532fd3ec20",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"_description\": \"Event Created by Client\",\n    \"_name\": \"Radiation\",\n    \"_profile_id\": \"{{CLIENT_PROFILE_ID}}\",\n    \"_start_date\": \"2023-10-18\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{URL}}/rest/v1/rpc/fn_event_upsert"
+									},
+									"response": []
+								},
+								{
+									"name": "Login Helper",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains access_token\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"HELPER_ACCESS_TOKEN\", responseBody.access_token);",
+													"    pm.environment.set(\"HELPER_USER_ID\", responseBody.user.id);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "89411665-52a0-4958-a9b2-9a40cbbf9675",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{HELPER_EMAIL_ADDRESS}}\",\n    \"password\": \"{{HELPER_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/auth/v1/token?grant_type=password",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"auth",
+												"v1",
+												"token"
+											],
+											"query": [
+												{
+													"key": "grant_type",
+													"value": "password"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Helper Profile",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body contains id\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+													"",
+													"    // set the client api key for access",
+													"    pm.environment.set(\"HELPER_PROFILE_ID\", responseBody[0].id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "2f028cd1-324a-4411-8e7d-1c59b55a8226",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_team?select=*&id=eq.{{HELPER_PROFILE_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_team"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "id",
+													"value": "eq.{{HELPER_PROFILE_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Event as Helper",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+												"exec": [
+													"pm.test(\"Response status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Response body count is 1\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    pm.expect(responseBody.length).to.eq(1);",
+													"});",
+													"",
+													"pm.test(\"validate values\", function () {",
+													"    var responseBody = pm.response.json();",
+													"    var eventID = pm.environment.get(\"EVENT_ID\");",
+													"    pm.expect(responseBody[0].id).to.eq(eventID);",
+													"    pm.expect(responseBody[0].description).to.eq(\"Event Created by Client\");",
+													"    pm.expect(responseBody[0].name).to.eq(\"Radiation\");",
+													"    pm.expect(responseBody[0].is_active).to.eq(true);",
+													"    pm.expect(responseBody[0].start_date).to.eq(\"2023-10-18\");",
+													"",
+													"    var clientId = pm.environment.get(\"ClIENT_USER_ID\");",
+													"    pm.expect(responseBody[0].client_id).to.eq(clientId);",
+													"",
+													"",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "fa13c186-b1e1-446b-ae0b-bae1196f4c0c",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_event?select=*&id=eq.{{EVENT_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_event"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "id",
+													"value": "eq.{{EVENT_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Dummy",
+									"id": "80ade5b5-feba-4d67-bd83-5847f98ca87e",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "apiKey",
+												"value": "{{API_KEY}}"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{HELPER_ACCESS_TOKEN}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{URL}}/rest/v1/vw_event?select=*&id=eq.{{EVENT_ID}}",
+											"host": [
+												"{{URL}}"
+											],
+											"path": [
+												"rest",
+												"v1",
+												"vw_event"
+											],
+											"query": [
+												{
+													"key": "select",
+													"value": "*"
+												},
+												{
+													"key": "id",
+													"value": "eq.{{EVENT_ID}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "3321c786-9b33-4530-9f66-cff4f235eced",
+							"description": "Testing selection policy for those not on same team or the creator of the event"
+						}
+					],
+					"id": "8ba597c0-9935-4e11-8a00-5448eef09e73",
+					"description": "All select policy tests"
+				}
+			],
+			"id": "58d6f672-a4d2-4685-b098-0915489106d5",
+			"description": "All tests for Row Level Security for Events"
+		},
+		{
+			"name": "Login Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains access_token\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+							"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "85e4c45e-031e-429e-a452-2979925e2106",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/auth/v1/token?grant_type=password",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"auth",
+						"v1",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+							"    pm.environment.set(\"TEAM_ID\", responseBody[0].team_id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "c4e5229f-9d8b-452c-b550-9de477121c0f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_profile_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_profile_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "user_id",
+							"value": "eq.{{CLIENT_USER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create an Event",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"EVENT_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "7e55ad1a-386d-434a-97e3-88720a5d2a81",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_description\": \"Hospital visit for radiation\",\n    \"_name\": \"Radiation\",\n    \"_team_id\": \"{{TEAM_ID}}\",\n    \"_start_date\": \"2023-10-10\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Event",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "a21514b6-1958-44f7-9926-b58fc8dd9e2f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_event?select=*&id=eq.{{EVENT_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_event"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "id",
+							"value": "eq.{{EVENT_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Select Addresses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2bd80977-1b6e-4339-8f4a-1a45b5d16b23",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // Parse the JSON response",
+							"    var responseBodyParsed = pm.response.json();",
+							"",
+							"    // Access the first element's ID",
+							"    var firstId = responseBodyParsed[0].id;",
+							"    var secondId = responseBodyParsed[1].id;",
+							"",
+							"    // Set the environment variable",
+							"    pm.environment.set(\"ADDRESS_ID\", firstId);",
+							"    pm.environment.set(\"ADDRESS_ID_2\", secondId);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "3a82c398-cbc2-41e6-bdb5-c1ccf4b29b1f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_address?select=*&profile_id=eq.{{CLIENT_PROFILE_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_address"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "profile_id",
+							"value": "eq.{{CLIENT_PROFILE_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Family Member",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"// Parse the JSON response",
+							"var responseBodyParsed = pm.response.json();",
+							"",
+							"// Access the first element's ID",
+							"var firstId = responseBodyParsed[0].id;",
+							"",
+							"// Set the environment variable",
+							"pm.environment.set(\"FAMILY_MEMBER_ID\", firstId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "9d159a42-2905-4fcf-a4f1-b672e3f18fa7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_profile_team?select=*&parent_profile_id=eq.{{CLIENT_PROFILE_ID}}&roles=cs.{\"FAMILY_MEMBER\"}&limit=1",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_profile_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "parent_profile_id",
+							"value": "eq.{{CLIENT_PROFILE_ID}}"
+						},
+						{
+							"key": "roles",
+							"value": "cs.{\"FAMILY_MEMBER\"}"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Child Care Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"CHILD_CARE_EVENT_STEP_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "50d76d3c-ef95-4325-92cb-4a71f322a7dc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_event_id\": {{EVENT_ID}},\n    \"_notes\": \" \",\n    \"_type\": \"CHILD_CARE\",\n    \"_attributes\": {\n        \"address_id\": {{ADDRESS_ID}},\n        \"family_member_ids\": [{{FAMILY_MEMBER_ID}}],\n        \"start_at\": \"2024-02-15T18:39:00Z\",\n        \"end_at\": \"2024-02-15T18:39:00Z\"\n    },\n    \"_parent_step_id\": null,\n    \"_id\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_step_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Meal Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"MEAL_EVENT_STEP_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "4794fef2-9535-4c2e-a34d-60ac93020e5a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_event_id\": {{EVENT_ID}},\n    \"_notes\": \" \",\n    \"_type\": \"MEAL\",\n    \"_attributes\": {\n        \"address_id\": {{ADDRESS_ID}},\n        \"family_member_ids\": [{{FAMILY_MEMBER_ID}}],\n        \"dropoff_at\": \"2023-10-11T18:39:00Z\"\n    },\n    \"_parent_step_id\": null,\n    \"_id\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_step_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Transportation Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"TRANSPORTATION_EVENT_STEP_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "28f3ac13-622e-470c-aa7d-fd723c30edb1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_event_id\": {{EVENT_ID}},\n    \"_notes\": \" \",\n    \"_type\": \"TRANSPORTATION\",\n    \"_attributes\": {\n        \"start_address_id\": {{ADDRESS_ID}},\n        \"end_address_id\": {{ADDRESS_ID_2}},\n        \"family_member_ids\": [{{FAMILY_MEMBER_ID}}],\n        \"pickup_at\": \"2023-10-11T18:39:00Z\"\n    },\n    \"_parent_step_id\": null,\n    \"_id\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_step_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Run Event Processor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"CHILD_CARE_EVENT_STEP_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "a71e4468-811c-49b1-b397-64acba68190b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event_processing_id\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/functions/v1/events/{{EVENT_ID}}/process"
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Helper",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // Parse the JSON response",
+							"    var responseBodyParsed = pm.response.json();",
+							"",
+							"    // Access the first element's ID",
+							"    var firstId = responseBodyParsed[0].id;",
+							"",
+							"    // Set the environment variable",
+							"    pm.environment.set(\"HELPER_PROFILE_ID\", firstId);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "ffcd45de-2764-4ec8-8bfd-6f131cc65112",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_team?select=*&parent_profile_id=eq.{{CLIENT_PROFILE_ID}}&roles=cs.{\"HELPER\"}&limit=1",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "parent_profile_id",
+							"value": "eq.{{CLIENT_PROFILE_ID}}"
+						},
+						{
+							"key": "roles",
+							"value": "cs.{\"HELPER\"}"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a request for Helper 1 for the Child Care Event Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"EVENT_STEP_REQUEST_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "659c6fd6-5978-4904-af2d-230b990f2535",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_event_step_id\": {{EVENT_STEP_ID}},\n    \"_notes\": null,\n    \"_profile_id\": {{HELPER_PROFILE_ID}},\n    \"_status\": \"INVITED\",\n    \"_user_id\": \"{{CLIENT_USER_ID}}\",\n    \"_id\": null\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_step_request_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a request for Helper 1 for the Meal Event Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"EVENT_STEP_REQUEST_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "d2712470-3294-4079-b8ab-18e7cc558fb6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_event_step_id\": {{MEAL_EVENT_STEP_ID}},\n    \"_notes\": null,\n    \"_profile_id\": {{HELPER_PROFILE_ID}},\n    \"_status\": \"INVITED\",\n    \"_user_id\": \"{{CLIENT_USER_ID}}\",\n    \"_id\": null\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_step_request_upsert"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a request for Helper 1 for the Transportation Event Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody).to.exist.and.to.be.a('number');",
+							"",
+							"    pm.environment.set(\"EVENT_STEP_REQUEST_ID\", responseBody);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "7e502d8c-0535-4ec5-bff5-b624f79f32a1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_event_step_id\": {{TRANSPORTATION_EVENT_STEP_ID}},\n    \"_notes\": null,\n    \"_profile_id\": {{HELPER_PROFILE_ID}},\n    \"_status\": \"INVITED\",\n    \"_user_id\": \"{{CLIENT_USER_ID}}\",\n    \"_id\": null\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/rest/v1/rpc/fn_event_step_request_upsert"
+			},
+			"response": []
+		}
+	]
+}

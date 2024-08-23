@@ -1,0 +1,255 @@
+{
+	"info": {
+		"_postman_id": "e8d7515e-5c71-4739-9753-30930db98970",
+		"name": "Invites",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains access_token\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody.access_token).to.exist.and.to.be.a('string');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_ACCESS_TOKEN\", responseBody.access_token);",
+							"    pm.environment.set(\"CLIENT_USER_ID\", responseBody.user.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "2f160e0a-b753-4bbb-b2ce-e0ed975e11b5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{CLIENT_EMAIL_ADDRESS}}\",\n    \"password\": \"{{CLIENT_PASSWORD}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/auth/v1/token?grant_type=password",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"auth",
+						"v1",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Client Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3a3bd92c-2616-4f6d-92aa-81c44fe850eb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body contains id\", function () {",
+							"    var responseBody = pm.response.json();",
+							"    pm.expect(responseBody[0].id).to.exist.and.to.be.a('number');",
+							"",
+							"    // set the client api key for access",
+							"    pm.environment.set(\"CLIENT_PROFILE_ID\", responseBody[0].id);",
+							"    pm.environment.set(\"CLIENT_TEAM_ID\", responseBody[0].team_id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "b32d6e60-8606-4a7b-8033-9a6218a0bf6c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/rest/v1/vw_profile_team?select=*&user_id=eq.{{CLIENT_USER_ID}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"rest",
+						"v1",
+						"vw_profile_team"
+					],
+					"query": [
+						{
+							"key": "select",
+							"value": "*"
+						},
+						{
+							"key": "user_id",
+							"value": "eq.{{CLIENT_USER_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invite Helper",
+			"id": "bf4e6341-f4ba-40c0-9203-03377ed8627a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"inviteeProfileId\": {{CLIENT_PROFILE_ID}},\n    \"email\": \"bob.m.wall+2@gmail.com\",\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Wall\",\n    \"relationshipAttributes\": \"{ 'request_types': ['CHILD_CARE'] }\",\n    \"roles\": [\"HELPER\"],\n    \"phoneNumber\": \"703-919-3750\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/functions/v1/users"
+			},
+			"response": []
+		},
+		{
+			"name": "Resend Invitation",
+			"id": "80e08d30-4c0e-458e-ba19-7111c6cd5dba",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "apiKey",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{CLIENT_ACCESS_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/users/95879a0c-a304-4707-bf12-a8639fc24398/resend-invite"
+			},
+			"response": []
+		},
+		{
+			"name": "Invite OPTIONS check",
+			"id": "0197787f-b34c-4cdd-93f8-5b3fb90f4514",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "OPTIONS",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{URL}}/users"
+			},
+			"response": []
+		}
+	]
+}

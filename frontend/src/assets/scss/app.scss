@@ -1,0 +1,83 @@
+@import './variables';
+@import './transitions';
+
+html {
+  font-size: 16px; // 1rem
+}
+
+html,
+body,
+#app,
+.router-view-root-transition-wrapper,
+.router-view-transition-wrapper {
+  height: 100%;
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bordered-list {
+  border: 1px solid gray !important;
+  width: 250px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.bordered-list .v-list-item {
+  width: 400px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.full-height {
+  height: 95vh; /* Set height to 100% of the viewport height */
+  overflow-y: auto; /* Add vertical scrollbar if content exceeds viewport height */
+}
+
+.v-breadcrumbs {
+  padding: 10px 0px 10px 5px !important;
+  font-size: 12px;
+}
+
+h5 {
+  margin-top: 12px;
+}
+
+a {
+  text-decoration: none;
+  color: #1fadb5;
+}
+
+.v-btn {
+  border-radius: 20px !important;
+}
+
+.v-chip {
+  min-width: 0;
+  margin: 4px;
+  margin-bottom: 8px;
+  padding: 4px;
+  border: 1px solid gray !important;
+  border-radius: 20px;
+}
+
+.v-divider {
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.card-container {
+  cursor: pointer; // Change cursor to pointer when hovering over the card
+}
+
+.event-card {
+  min-height: 8vh; /* Set height to 100% of the viewport height */
+  border: 1px solid #343434 !important;
+}
+
+.event-card.highlight {
+  background-color: #232323 !important; // Highlight color when card is hovered over
+}

@@ -1,0 +1,126 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      VERBOSE: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: '1.35.2'
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: deno lint --ignore=./postman/*,deno.lock
+
+      - name: Start up Supabase
+        run: npx supabase start
+
+      - name: Get Supabase Vars
+        id: supabase-vars
+        run: |
+          OUTPUT=$(npx supabase status -o env)
+          echo "$OUTPUT" | while read -r line; do
+            VAR_NAME=$(echo "$line" | cut -d'=' -f1)
+            VAR_VALUE=$(echo "$line" | cut -d'=' -f2-)
+
+            # Removing wrapping quotes
+            VAR_VALUE=$(echo $VAR_VALUE | tr -d '"')
+
+            # Renaming the variables as per your requirements
+            if [ "$VAR_NAME" == "SERVICE_ROLE_KEY" ]; then
+              VAR_NAME="SUPABASE_SERVICE_ROLE_KEY"
+            elif [ "$VAR_NAME" == "ANON_KEY" ]; then
+              VAR_NAME="SUPABASE_ANON_KEY"
+            elif [ "$VAR_NAME" == "API_URL" ]; then
+              VAR_NAME="SUPABASE_URL"
+            fi
+
+            echo "$VAR_NAME=$VAR_VALUE" >> $GITHUB_ENV
+          done
+
+      - name: Insert SUPABASE_EDGE_FUNCTION_URL and SUPABASE_ANON_KEY into config table
+        run: node insertConfig.js
+
+      #- name: Run DB Tests
+      #  run: |
+      #      supabase db start
+      #      supabase test db
+
+      #- name: Run Edge Function Tests
+      #  run: |
+      #    deno cache ./supabase/functions/import_map.json
+      #    deno test --allow-all --import-map=./supabase/functions/import_map.json ./supabase/tests/deno  --coverage=coverage
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    environment:
+      name: development
+
+    env:
+      HUBSPOT_RBY_USERS_TOKEN: ${{ secrets.HUBSPOT_RBY_USERS_TOKEN }}
+      ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
+      ONESIGNAL_EMAIL_FROM_ADDRESS: ${{ secrets.ONESIGNAL_EMAIL_FROM_ADDRESS }}
+      ONESIGNAL_EMAIL_FROM_NAME: ${{ secrets.ONESIGNAL_EMAIL_FROM_NAME }}
+      ONESIGNAL_PHONE_NUMBER: ${{ secrets.ONESIGNAL_PHONE_NUMBER }}
+      ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPPORT_ENV: ${{ vars.SUPPORT_ENV }}
+      VERBOSE: ${{ vars.VERBOSE }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to project
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+
+      - name: Set Environment Variable Secrets
+        run: |
+          supabase secrets set HUBSPOT_RBY_USERS_TOKEN=$HUBSPOT_RBY_USERS_TOKEN
+          supabase secrets set ONESIGNAL_APP_ID=$ONESIGNAL_APP_ID
+          supabase secrets set ONESIGNAL_EMAIL_FROM_ADDRESS=$ONESIGNAL_EMAIL_FROM_ADDRESS
+          supabase secrets set ONESIGNAL_EMAIL_FROM_NAME="$ONESIGNAL_EMAIL_FROM_NAME"
+          supabase secrets set ONESIGNAL_PHONE_NUMBER=$ONESIGNAL_PHONE_NUMBER
+          supabase secrets set ONESIGNAL_REST_API_KEY=$ONESIGNAL_REST_API_KEY
+          supabase secrets set SLACK_TOKEN=$SLACK_TOKEN
+          supabase secrets set SUPPORT_ENV=$SUPPORT_ENV
+          supabase secrets set VERBOSE=$VERBOSE
+
+      - name: Migrate Database
+        run: supabase db push
+
+      - name: Deploy Events Function
+        run: supabase functions deploy events
+
+      - name: Deploy Users Function
+        run: supabase functions deploy users

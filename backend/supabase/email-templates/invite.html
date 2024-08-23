@@ -1,0 +1,25 @@
+<p>Hi {{ .Data.firstName }},</p>
+
+<p>We are reaching out to you on behalf of {{ .Data.invitedByFirstName }}, who is currently assisting us in testing and enhancing a new product.</p>
+
+<p>We're excited to introduce you to Support.dev, an innovative online concierge service designed to make it easy to help someone going through cancer treatment.</p>
+
+<p>Here's how it works:</p>
+
+<ol>
+  <li>Begin by creating your account.</li>
+  <li>Choose the type of support you would like to offer, if {{ .Data.invitedByFirstName }} really needed it</li>
+  <li>When specific requests from {{ .Data.invitedByFirstName }} become available, review and commit to them.</li>
+</ol>
+
+<p>Please bear in mind that we are still in the early stages of development and are actively testing our capabilities. Your valuable
+  assistance in making Support.dev even better is sincerely appreciated, as together, we can make a meaningful difference in someone’s life.</p>
+
+<a href="{{ .SiteURL}}/confirminvite?token={{ .TokenHash }}"
+    style="display: inline-block; padding: 10px 20px; background-color: #1FADB5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;"
+>
+  Join {{ .Data.invitedByFirstName }} {{ .Data.invitedByLastName }}'s Event
+</a>
+
+<p>Thanks,</p>
+<p>Support.dev Team</p>
