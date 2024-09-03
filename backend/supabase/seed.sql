@@ -149,7 +149,7 @@ BEGIN
     INSERT INTO public.lookup_transportation_rule (id, description, created_by) VALUES ('WHEEL_CHAIR_ACCESSIBLE', 'Wheelchair Accessible Vehicle', fn_get_authenticated_user_id());
 
     SELECT * INTO _user_id 
-    FROM public.fn_seed_create_user('bob.m.wall@gmail.com', 'testing123');
+    FROM public.fn_seed_create_user('bob@support.dev', 'testing123');
 
     -- create the main user profile
     SELECT * INTO _profile_id
@@ -160,7 +160,7 @@ BEGIN
       NULL,
       NULL,
       CAST('Bob' AS TEXT),
-      CAST('Wall' AS TEXT),
+      CAST('Support' AS TEXT),
       NULL,
       ARRAY['CLIENT', 'TEAM_OWNER']::role[],
       NULL);
@@ -186,8 +186,8 @@ BEGIN
     SELECT * INTO _home_address_id
     FROM public.fn_address_upsert(
       CAST('Mount Pleasant' AS TEXT), CAST('' AS TEXT),
-      _profile_id, CAST('SC' AS TEXT), CAST('1475 Hollenberg Lane' AS TEXT),
-      'HOME', CAST('29464' AS TEXT),
+      _profile_id, CAST('SC' AS TEXT), CAST('1111 Broad Street' AS TEXT),
+      'HOME', CAST('21211' AS TEXT),
       NULL, NULL, NULL
     );
 
@@ -202,7 +202,7 @@ BEGIN
 
     -- create a team admin
     SELECT * INTO _team_admin_1_user_id 
-    FROM public.fn_seed_create_user('bob.m.wall+teamadmin@gmail.com', 'testing123');
+    FROM public.fn_seed_create_user('bob+teamadmin@support.dev', 'testing123');
 
     SELECT * INTO _team_admin_1_id
     FROM public.fn_profile_and_relationship_upsert(
@@ -219,7 +219,7 @@ BEGIN
 
     -- create a helper
     SELECT * INTO _helper_1_user_id 
-    FROM public.fn_seed_create_user('bob.m.wall+helper1@gmail.com', 'testing123');
+    FROM public.fn_seed_create_user('bob+helper1@support.dev', 'testing123');
 
     SELECT * INTO _helper_1_id
     FROM public.fn_profile_and_relationship_upsert(
@@ -236,7 +236,7 @@ BEGIN
 
     -- create a helper/family member
     SELECT * INTO _helper_2_user_id 
-    FROM public.fn_seed_create_user('bob.m.wall+helper2@gmail.com', 'testing123');
+    FROM public.fn_seed_create_user('bob+helper2@support.dev', 'testing123');
 
     SELECT *  INTO _helper_2_id
     FROM public.fn_profile_and_relationship_upsert(
@@ -375,7 +375,7 @@ BEGIN
     GRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA history TO postgres, authenticated, service_role, dashboard_user;
 
     SELECT * INTO _other_user_id 
-    FROM public.fn_seed_create_user('bob.m.wall+other@gmail.com', 'testing123');
+    FROM public.fn_seed_create_user('bob+other@support.dev', 'testing123');
 
     -- create the main user profile
     SELECT * INTO _other_profile_id
@@ -393,7 +393,7 @@ BEGIN
 
      -- create a team owner (no CLIENT role)
     SELECT * INTO _team_owner_bob_team_user_id 
-    FROM public.fn_seed_create_user('bob.m.wall+teamownernotclient@gmail.com', 'testing123');
+    FROM public.fn_seed_create_user('bob+teamownernotclient@support.dev', 'testing123');
 
     SELECT * INTO _team_owner_bob_team_profile_id
     FROM public.fn_profile_and_relationship_upsert(
