@@ -53,8 +53,8 @@ watch(
     <v-card-actions style="min-height: 200px">
       <v-spacer />
       <span v-if="!auth.isAuthenticated" class="mt-5 pb-0">
-        <v-btn class="mr-3" size="large" color="primary" :to="{ name: 'preregister' }" variant="elevated"
-          ><span class="pa-2">{{ t('Preregister') }}</span></v-btn
+        <v-btn class="mr-3" size="large" color="primary" :to="{ name: 'signup' }" variant="elevated"
+          ><span class="pa-2">{{ t('Sign Up') }}</span></v-btn
         >
 
         <v-btn v-if="false" class="mr-3" size="large" color="primary" :to="{ name: 'signup' }" variant="elevated">{{

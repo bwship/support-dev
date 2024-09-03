@@ -147,8 +147,8 @@ onMounted(async () => {
     <v-card-text class="pt-0 pb-5">
       <p class="text-grey-lighten-1" style="margin-top: 20px">
         {{ $t('Need to create an account') }}
-        <router-link :to="{ name: 'preregister' }">
-          {{ $t('Preregister') }}
+        <router-link :to="{ name: 'signup' }">
+          {{ $t('Sign Up') }}
         </router-link>
       </p>
     </v-card-text>
