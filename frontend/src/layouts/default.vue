@@ -52,11 +52,6 @@ onMounted(() => {
               <i-mdi-open-in-new class="pt-2" size="large" />
             </a>
           </span>
-
-          <router-link :to="{ name: 'forms' }">
-            <v-icon size="x-small">mdi-form-select</v-icon>
-            {{ $t('Beta Registration Form') }}
-          </router-link>
         </v-col>
 
         <v-divider inset class="my-8 mx-16" />
